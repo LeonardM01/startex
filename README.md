@@ -4,32 +4,17 @@ A simple CLI tool to scaffold a new [Express.js](https://expressjs.com/) project
 
 ## Features
 - Choose between JavaScript and TypeScript templates
+- Prisma database templates with MySQL, PostgreSQL, and MongoDB support
 - Automatic package installation with package manager detection
+- Automatic Prisma client generation for database templates
 - Copies a template project to a new directory
 - Prompts for project name and updates `package.json`
 - Optionally initializes a git repository
 - Automatic Dockerfile for deployment and a Github actions workflow file that deploys the server
 
-## Installation
+---
 
-You can use `npx` to run without installing globally:
-
-```
-npx startex <project-directory>
-```
-
-Or install globally:
-
-```
-npm install -g startex
-startex <project-directory>
-```
-
-## Important!
-
-****When executed, make sure you update the [workflow file](./templates/[chosen-template]/.github/workflows/api-deployment.yml) and change the `envs` that hold the data used when deploying.****
-
-## Usage
+# Usage
 
 ```
 npx startex my-app
@@ -37,30 +22,64 @@ npx startex my-app
 
 You will be prompted for:
 - **Project name** (used to update the new project's `package.json`)
-- **Template choice** (TypeScript or JavaScript)
+- **Template choice** (TypeScript, JavaScript, or Prisma variants)
+- **Database choice** (MySQL, PostgreSQL, or MongoDB - for Prisma templates)
 - **Initialize a git repository** (yes/no)
 - **Install packages** (yes/no)
 
+
+## Important!
+
+****When executed, make sure you update the [workflow file](./templates/[chosen-template]/.github/workflows/api-deployment.yml) and change the `envs` that hold the data used when deploying.****
+
+<br/>
+
+---
+
+<br/>
+
 ## Templates
 
-The CLI includes two template options:
+The CLI includes multiple template options:
 
-### TypeScript Template (`templates/typescript/`)
+### Basic Templates
+
+#### TypeScript Template
+
 - Full TypeScript setup with type definitions
 - TypeScript compilation with `tsc`
 - Type-safe Express.js configuration
 - Development with `ts-node` and `nodemon`
 - Production build process
 
-### JavaScript Template (`templates/javascript/`)
+#### JavaScript Template
+
 - Modern ES modules (ESM) setup
 - Direct Node.js execution
 - Simplified development workflow
 - No build step required for deployment
 
+### Prisma Database Templates
+
+#### TypeScript/JavaScript + Prisma Templates
+- **MySQL**
+- **PostgreSQL**
+- **MongoDB**
+
+**Prisma templates include:**
+- Type-safe database queries with Prisma ORM
+- Pre-configured database schemas (User/Post models)
+- Database migration and seeding scripts
+- CRUD API endpoints examples
+- Database connection management
+- **Automatic Prisma client generation** during setup
+- Type-safe Express.js configuration
+- Development with `ts-node` and `nodemon`
+- Production build process
+
 
 # 🚀 Project Roadmap
-
+****
 > **Phase 1: Foundational Flexibility**
 >
 > ```
@@ -79,7 +98,7 @@ The CLI includes two template options:
 > ```
 > ●
 > │
-> ├─ 🗃️ Advanced Database Initialization (ORMs)
+> ├─ ✅Done -> Advanced Database Initialization (ORMs)
 > │
 > └─ 🎨 Expanded Template Library (REST, GraphQL)
 > ```
@@ -91,7 +110,7 @@ The CLI includes two template options:
 > ```
 > ●
 > │
-> └─ 💬 Interactive Project Scaffolding (CLI Prompts)
+> └─ 💬 Advanced Project Scaffolding (Prompts)
 > ```
 _Have a feature request? Open an issue or contribute!_
 

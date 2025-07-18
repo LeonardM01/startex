@@ -33,8 +33,22 @@ const destDir = path.resolve(process.cwd(), targetDir);
       choices: [
         { name: "TypeScript", value: "typescript" },
         { name: "JavaScript", value: "javascript" },
+        { name: "TypeScript + Prisma", value: "typescript-prisma" },
+        { name: "JavaScript + Prisma", value: "javascript-prisma" },
       ],
       default: "typescript",
+    },
+    {
+      type: "list",
+      name: "database",
+      message: "Choose a database (for Prisma templates):",
+      choices: [
+        { name: "MySQL", value: "mysql" },
+        { name: "PostgreSQL", value: "postgresql" },
+        { name: "MongoDB", value: "mongodb" },
+      ],
+      default: "mysql",
+      when: (answers) => answers.template.includes("prisma"),
     },
     {
       type: "confirm",
@@ -50,17 +64,21 @@ const destDir = path.resolve(process.cwd(), targetDir);
     },
   ]);
 
-  const templateDir = path.join(__dirname, "templates", answers.template);
+  // Determine the template directory based on choices
+  let templateName = answers.template;
+  if (answers.template.includes("prisma") && answers.database) {
+    templateName = `${answers.template}-${answers.database}`;
+  }
+
+  const templateDir = path.join(__dirname, "templates", templateName);
 
   if (!(await fs.pathExists(templateDir))) {
-    console.error(`Template "${answers.template}" not found at ${templateDir}`);
+    console.error(`Template "${templateName}" not found at ${templateDir}`);
     process.exit(1);
   }
 
   await fs.copy(templateDir, destDir);
-  console.log(
-    `Project created in ${destDir} using ${answers.template} template`
-  );
+  console.log(`Project created in ${destDir} using ${templateName} template`);
 
   const pkgPath = path.join(destDir, "package.json");
   if (await fs.pathExists(pkgPath)) {
@@ -82,7 +100,6 @@ const destDir = path.resolve(process.cwd(), targetDir);
   if (answers.installPackages) {
     console.log("Installing packages...");
     try {
-      // Detect package manager by checking for lock files
       const packageManager = detectPackageManager(destDir);
 
       console.log(`Using ${packageManager} to install packages...`);
@@ -95,6 +112,35 @@ const destDir = path.resolve(process.cwd(), targetDir);
 
       execSync(installCommand, { cwd: destDir, stdio: "inherit" });
       console.log("✅ Packages installed successfully!");
+
+      // Generate Prisma client if this is a Prisma template
+      if (templateName.includes("prisma")) {
+        console.log("Generating Prisma client...");
+        try {
+          const prismaCommand =
+            packageManager === "npm"
+              ? "npx prisma generate"
+              : packageManager === "pnpm"
+              ? "pnpm exec prisma generate"
+              : "yarn prisma generate";
+
+          execSync(prismaCommand, { cwd: destDir, stdio: "inherit" });
+          console.log("✅ Prisma client generated successfully!");
+        } catch (err) {
+          console.warn("❌ Failed to generate Prisma client:", err.message);
+          console.log("You can generate it manually by running:");
+          console.log(`  cd ${path.basename(destDir)}`);
+          console.log(
+            `  ${
+              packageManager === "npm"
+                ? "npx"
+                : packageManager === "pnpm"
+                ? "pnpm exec"
+                : "yarn"
+            } prisma generate`
+          );
+        }
+      }
     } catch (err) {
       console.warn("❌ Failed to install packages:", err.message);
       console.log(`You can install them manually by running:`);
@@ -113,8 +159,22 @@ const destDir = path.resolve(process.cwd(), targetDir);
   console.log(`  cd ${path.basename(destDir)}`);
   if (!answers.installPackages) {
     console.log(`  npm install`);
+    if (templateName.includes("prisma")) {
+      console.log(`  npx prisma generate`);
+    }
   }
-  if (answers.template === "typescript") {
+
+  // Template-specific instructions
+  if (templateName.includes("prisma")) {
+    console.log(`  # Set up your database:`);
+    console.log(`  # 1. Update DATABASE_URL in .env file`);
+    console.log(`  # 2. npm run db:push    # Push schema to database`);
+    console.log(`  # 3. npm run db:seed    # Seed with sample data`);
+    console.log(`  npm run dev             # Start development server`);
+    console.log(
+      `  npm run db:studio       # Open Prisma Studio (database GUI)`
+    );
+  } else if (answers.template === "typescript") {
     console.log(`  npm run dev    # Start development server`);
     console.log(`  npm run build  # Build for production`);
   } else {

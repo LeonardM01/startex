@@ -1,0 +1,59 @@
+name: API Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "express/**"
+
+env:
+  DOCKER_HUB_REPO: <-- REPO NAME -->
+  LOGS_LOCATION: <-- FILE PATH FOR LOGS ON THE SERVER -->
+  ENV_LOCATION: <-- FILE PATH WHERE ENVS USED FOR BUILDS IS STORED  -->
+  CONTAINER_NAME: <-- NAME FOR THE DOCKER CONTAINER -->
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to docker hub
+        run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_TOKEN}}
+
+      - name: Build docker image
+        working-directory: express
+        run: |
+          docker build -t ${{ env.DOCKER_HUB_REPO }}:${{ github.sha }} .
+          docker tag ${{ env.DOCKER_HUB_REPO }}:${{ github.sha }} ${{ env.DOCKER_HUB_REPO }}:latest
+
+      - name: Publish image to docker hub
+        run: |
+          docker push ${{ env.DOCKER_HUB_REPO }}:${{ github.sha }}
+          docker push ${{ env.DOCKER_HUB_REPO }}:latest
+
+  Deploy:
+    needs: Build
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Login to docker hub
+        run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_TOKEN}}
+
+      - name: Pull Image from docker hub
+        run: docker pull ${{ env.DOCKER_HUB_REPO }}:latest
+
+      - name: Delete old container
+        run: docker rm -f ${{ env.CONTAINER_NAME }}
+
+      - name: Run the new Docker container
+        run: |
+          docker run -d \
+            --name ${{ env.CONTAINER_NAME }}
+            -p 8080:8080 \
+            --restart on-failure:5 \
+            -v ${{ env.LOGS_LOCATION }}:/app/logs \
+            --env-file ${{ env.ENV_LOCATION }}/.env \
+            ${{ env.DOCKER_HUB_REPO }}:latest

@@ -1,9 +1,9 @@
 {
   "name": "startex",
   "type": "module",
-  "version": "2.1.0",
-  "description": "A simple CLI tool to scaffold Express.js projects with modern templates",
-  "keywords": ["express", "typescript", "javascript", "cli", "scaffold", "template", "generator", "starter"],
+  "version": "3.1.0",
+  "description": "A simple CLI tool to scaffold Express.js projects with TypeScript/JavaScript and Prisma database templates",
+  "keywords": ["express", "typescript", "javascript", "prisma", "mysql", "postgresql", "mongodb", "cli", "scaffold", "template", "generator", "starter"],
   "license": "MIT",
   "bin": {
     "startex": "index.js"
