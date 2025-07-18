@@ -1,0 +1,13 @@
+{
+  "name": "startex",
+  "type": "module",
+  "version": "1.0.2",
+  "license": "MIT",
+  "bin": {
+    "startex": "index.js"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1",
+    "inquirer": "^9.2.16"
+  }
+}
