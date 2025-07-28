@@ -3,9 +3,9 @@ import express from "express";
 import helmet from "helmet";
 import compression from "compression";
 
-import { apiLimiter, corsRules } from "./configs/security";
-import { morganMiddleware, winstonLogger } from "./configs/logging";
-import exampleRouter from "./api/routes/router-example";
+import { apiLimiter, corsRules } from "./configs/security.js";
+import { morganMiddleware, winstonLogger } from "./configs/logging.js";
+import exampleRouter from "./api/routes/router-example.js";
 
 config();
 
@@ -23,7 +23,7 @@ app.use(morganMiddleware);
 app.use("/api/v1/example", exampleRouter);
 
 app.listen(port, () => {
-  winstonLogger.info(
-    `Server running on port ${port} in ${process.env.NODE_ENV} mode`
-  );
+    winstonLogger.info(
+        `Server running on port ${port} in ${process.env.NODE_ENV} mode`,
+    );
 });

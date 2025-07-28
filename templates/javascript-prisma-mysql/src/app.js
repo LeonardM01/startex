@@ -3,9 +3,9 @@ import express from "express";
 import helmet from "helmet";
 import compression from "compression";
 
-import { apiLimiter, corsRules } from "./configs/security";
-import { morganMiddleware, winstonLogger } from "./configs/logging";
-import exampleRouter from "./api/routes/router-example";
+import { apiLimiter, corsRules } from "./configs/security.js";
+import { morganMiddleware, winstonLogger } from "./configs/logging.js";
+import exampleRouter from "./api/routes/router-example.js";
 
 config();
 

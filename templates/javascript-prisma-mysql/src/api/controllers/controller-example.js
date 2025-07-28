@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 
 export const exampleFunction = async (req, res) => {
   res.status(200).json("Hello world with Prisma!");

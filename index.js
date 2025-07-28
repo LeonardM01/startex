@@ -40,7 +40,7 @@ const destDir = path.resolve(process.cwd(), targetDir);
       type: "confirm",
       name: "useDatabase",
       message: "Do you want to include a database (Prisma ORM)?",
-      default: false,
+      default: true,
     },
     {
       type: "list",
