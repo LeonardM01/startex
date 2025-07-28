@@ -3,8 +3,9 @@
 A simple CLI tool to scaffold a new [Express.js](https://expressjs.com/) project from a template, similar to `create-next-app`.
 
 ## Features
+- Interactive prompts for better user experience: language choice (TypeScript/JavaScript), then database preference
 - Choose between JavaScript and TypeScript templates
-- Prisma database templates with MySQL, PostgreSQL, and MongoDB support
+- Optional Prisma database templates with MySQL, PostgreSQL, and MongoDB support
 - Automatic package installation with package manager detection
 - Automatic Prisma client generation for database templates
 - Copies a template project to a new directory
@@ -22,8 +23,9 @@ npx startex my-app
 
 You will be prompted for:
 - **Project name** (used to update the new project's `package.json`)
-- **Template choice** (TypeScript, JavaScript, or Prisma variants)
-- **Database choice** (MySQL, PostgreSQL, or MongoDB - for Prisma templates)
+- **Language choice** (TypeScript or JavaScript)
+- **Database preference** (whether to include Prisma ORM)
+- **Database type** (MySQL, PostgreSQL, or MongoDB - if database is selected)
 - **Initialize a git repository** (yes/no)
 - **Install packages** (yes/no)
 

@@ -1,7 +1,5 @@
-import type { RequestHandler } from "express";
-
 import winston from "winston";
-import morgan, { StreamOptions } from "morgan";
+import morgan from "morgan";
 import path from "node:path";
 
 const logDir = process.env.NODE_ENV !== "production" ? "" : "/app/logs";
@@ -10,7 +8,7 @@ export const winstonLogger = winston.createLogger({
   level: process.env.NODE_ENV === "production" ? "info" : "debug",
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json(),
+    winston.format.json()
   ),
   transports: [
     new winston.transports.File({
@@ -24,15 +22,15 @@ export const winstonLogger = winston.createLogger({
 });
 
 const formatFn = morgan.compile(
-  process.env.NODE_ENV === "production" ? "combined" : "dev",
+  process.env.NODE_ENV === "production" ? "combined" : "dev"
 );
 
-const stream: StreamOptions = {
-  write: (msg: string) => {
+const stream = {
+  write: (msg) => {
     winstonLogger.info(msg.trim());
   },
 };
 
-export const morganMiddleware: RequestHandler = morgan(formatFn, {
+export const morganMiddleware = morgan(formatFn, {
   stream,
 });

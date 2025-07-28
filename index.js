@@ -28,27 +28,31 @@ const destDir = path.resolve(process.cwd(), targetDir);
     },
     {
       type: "list",
-      name: "template",
-      message: "Choose a template:",
+      name: "language",
+      message: "Choose your preferred language:",
       choices: [
         { name: "TypeScript", value: "typescript" },
         { name: "JavaScript", value: "javascript" },
-        { name: "TypeScript + Prisma", value: "typescript-prisma" },
-        { name: "JavaScript + Prisma", value: "javascript-prisma" },
       ],
       default: "typescript",
     },
     {
+      type: "confirm",
+      name: "useDatabase",
+      message: "Do you want to include a database (Prisma ORM)?",
+      default: false,
+    },
+    {
       type: "list",
       name: "database",
-      message: "Choose a database (for Prisma templates):",
+      message: "Choose a database:",
       choices: [
         { name: "MySQL", value: "mysql" },
         { name: "PostgreSQL", value: "postgresql" },
         { name: "MongoDB", value: "mongodb" },
       ],
       default: "mysql",
-      when: (answers) => answers.template.includes("prisma"),
+      when: (answers) => answers.useDatabase,
     },
     {
       type: "confirm",
@@ -65,9 +69,9 @@ const destDir = path.resolve(process.cwd(), targetDir);
   ]);
 
   // Determine the template directory based on choices
-  let templateName = answers.template;
-  if (answers.template.includes("prisma") && answers.database) {
-    templateName = `${answers.template}-${answers.database}`;
+  let templateName = answers.language;
+  if (answers.useDatabase && answers.database) {
+    templateName = `${answers.language}-prisma-${answers.database}`;
   }
 
   const templateDir = path.join(__dirname, "templates", templateName);
@@ -114,7 +118,7 @@ const destDir = path.resolve(process.cwd(), targetDir);
       console.log("✅ Packages installed successfully!");
 
       // Generate Prisma client if this is a Prisma template
-      if (templateName.includes("prisma")) {
+      if (answers.useDatabase) {
         console.log("Generating Prisma client...");
         try {
           const prismaCommand =
@@ -159,13 +163,13 @@ const destDir = path.resolve(process.cwd(), targetDir);
   console.log(`  cd ${path.basename(destDir)}`);
   if (!answers.installPackages) {
     console.log(`  npm install`);
-    if (templateName.includes("prisma")) {
+    if (answers.useDatabase) {
       console.log(`  npx prisma generate`);
     }
   }
 
   // Template-specific instructions
-  if (templateName.includes("prisma")) {
+  if (answers.useDatabase) {
     console.log(`  # Set up your database:`);
     console.log(`  # 1. Update DATABASE_URL in .env file`);
     console.log(`  # 2. npm run db:push    # Push schema to database`);
@@ -174,7 +178,7 @@ const destDir = path.resolve(process.cwd(), targetDir);
     console.log(
       `  npm run db:studio       # Open Prisma Studio (database GUI)`
     );
-  } else if (answers.template === "typescript") {
+  } else if (answers.language === "typescript") {
     console.log(`  npm run dev    # Start development server`);
     console.log(`  npm run build  # Build for production`);
   } else {

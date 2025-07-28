@@ -1,11 +1,10 @@
-import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
-export const exampleFunction = async (req: Request, res: Response) => {
+export const exampleFunction = async (req, res) => {
   res.status(200).json("Hello world with Prisma!");
 };
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       include: {
@@ -18,7 +17,7 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req, res) => {
   try {
     const { email, name } = req.body;
     const user = await prisma.user.create({
@@ -33,7 +32,7 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await prisma.user.findUnique({
